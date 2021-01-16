@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+      integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link 
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Tangerine" 
+    />
+    <link 
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Roboto+Slab" 
+    />
+
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <title>4Caster</title>
+  </head>
+
+  <body>
+      <header>
+          <h1>4<span class="scripted">caster</span></h1>
+          <p class="tagline">Your source for weather</p>
+      </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 d-none d-md-block bg-dark sidebar">
+            <div class="sidebar-sticky">
+                <h2 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-white">Search by city</h2>
+                <form>
+                    <input id="city" type="text" />
+                    <label for="metric">C&deg;</label> <input type="radio" id="metric" value="metric" name="unit" checked="checked" />
+                    <label for="imperial">f&deg;</label> <input type="radio" id="imperial" value="imperial" name="unit"/>
+                    <submit id="search" class="btn btn-primary"><i class="fas fa-search"></i></submit>
+                </form>
+
+    
+                <h3 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span>Saved searches</span>
+                <a class="d-flex align-items-center text-muted" href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                </a>
+                </h3>
+            
+            </div>
+            </nav>
+    
+            <main role="main" class="col-md-8 ml-sm-auto col-lg-9 pt-3 px-4"><div class="chartjs-size-monitor" style="position: absolute; inset: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                <h2 class="h2">Dashboard</h2>
+
+            </div>
+    
+    
+            <h2>Section title</h2>
+            <div class="table-responsive">
+
+            </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="assets/js/script.js"></script>
+  </body>
+</html>
