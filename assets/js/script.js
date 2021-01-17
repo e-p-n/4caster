@@ -1,15 +1,13 @@
 var cityEl = document.querySelector("#city");
 var searchBtnEl = document.querySelector("#search");
 var weatherDisplayEl = document.querySelector("main");
-
+var tempScale, windScale, lat, lon, weatherCardEl, weatherCardBodyEl, cityName, forecastHolderEl;
 
 
 function searchWeather() {
-
     let unitValues = document.getElementsByName("unit");
     let unit;
-    let cityName = cityEl.value;
-    cityEl.value = "";
+    cityName = cityEl.value;
 
     for (var i = 0; i < unitValues.length; i++){
 
@@ -17,98 +15,200 @@ function searchWeather() {
             unit = unitValues[i].value;
             if (unit === "metric") {
                 tempScale = "˚C";
+                windScale = " KM/H";
             } else {
-                tempScale = "˚F"
+                tempScale = "˚F";
+                windScale = " MPH"
             }
         }
     }
 
+    
+  
     if (cityName) {
-        let forecastAPICall = "http://api.openweathermap.org/data/2.5/forecast?q="+cityName+"&units="+unit+"&appid=df74799927b7fd8a9f5fb2e7b85418e6";
-        fetch(forecastAPICall)
-            .then(function(response) {
+        let coordAPICall = "http://api.openweathermap.org/geo/1.0/direct?q="+cityName+"&limit=1&appid=df74799927b7fd8a9f5fb2e7b85418e6";
+        fetch(coordAPICall)
+            .then(function(response){
                 return response.json();        
             })
             .then(function(data){
-                let forecasts = data.list;
-                for (var i=0; i < forecasts.length; i+=8) {
-                    weatherForecast(forecasts[i], cityName, i)
-                    if (i===0) {i--};
+                lat = data[0].lat;
+                lon = data[0].lon;
+                if(data[0].local_names.en) {
+                    cityName = data[0].local_names.en;
+                } else {
+                    cityName = data[0].name;
                 }
+                cityEl.value = "";
+                let forecastAPICall = "http://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=minutely,hourly,alerts&units="+unit+"&appid=df74799927b7fd8a9f5fb2e7b85418e6";
 
+                fetch(forecastAPICall)
+                    .then(function(response) {
+                        return response.json();        
+                    })
+                    .then(function(data){
+                        currentWeather(data.current)
+                        for (var i=0; i < 5; i++) {
+                            weatherForecast(data.daily[i], i)
+                        }
+                    })
+                    .catch(function(){
+                        alert("An error has occurred, please try again.")
+                    })
+            })          
+            .catch(function(){
+                alert("An error has occurred, please check your spelling and try again.")
+                return;
             })
-        weatherDisplayEl.textContent = "";
 
+    
+        weatherDisplayEl.textContent = "";
     } else {
         alert("Fill out the damned form!")
     }
 }
-
-function weatherForecast(forecast, city, dayNo){
-    city = city.charAt(0).toUpperCase() + city.slice(1);
-    let bgColor, fontColor, iconSize, dateSize;
-    if (dayNo === 0) {
-        bgColor = "bg-blue";
-        fontColor = "white";
-        iconSize = "largeIcon";
-        dateSize = "h3"
-    } else {
-        bgColor = "bg-white";
-        fontColor = "blue";
-        iconSize = "none";
-        dateSize = "h4"
-        if (dayNo===7){
-            let fiveDayTitle = document.createElement("h2");
-            fiveDayTitle.classList.add("blue");
-            fiveDayTitle.textContent = "Five Day Forecast:";
-            weatherDisplayEl.appendChild(fiveDayTitle);
-        }
-    }
+function buildWeatherCard(bgColor, isForecast, isFirst){
     
-    let weatherCardEl = document.createElement("div");
-    weatherCardEl.classList.add("card", bgColor);
-    let weatherCardBodyEl = document.createElement("div");
+    weatherCardEl = document.createElement("div");
+    weatherCardEl.classList.add("card", "col", bgColor);
+    weatherCardBodyEl = document.createElement("div");
     weatherCardBodyEl.classList.add("card-body");
-    if (dayNo === 0) {
-        let cityEl = document.createElement("h2");
-        cityEl.classList.add("card-title", fontColor);
-        cityEl.textContent = city;
-        weatherCardBodyEl.appendChild(cityEl);
-    }
-    let dateEl = document.createElement(dateSize);
+    if (isForecast && isFirst) {
+        forecastHolderEl = document.createElement("div");
+        forecastHolderEl.classList.add("row");
+        forecastHolderEl.appendChild(weatherCardEl);
+        weatherDisplayEl.appendChild(forecastHolderEl);
+    } else if (isForecast && !isFirst) {
+        forecastHolderEl.appendChild(weatherCardEl);
+
+    } else {
+        weatherDisplayEl.appendChild(weatherCardEl);
+    }    
+}
+
+function buildCommonCardElements(hSize, theDate, fontColor, iconSize, iconType, temp) {
+    let dateEl = document.createElement(hSize);
     dateEl.classList.add("card-subtitle", fontColor);
-    dateEl.textContent = moment(forecast.dt*1000).format("dddd MMMM DD.");
+    dateEl.textContent = moment(theDate*1000).format("dddd MMMM DD");
     weatherCardBodyEl.appendChild(dateEl);
     let weatherIconEl = document.createElement("i");
-    weatherIconEl.classList.add("weather-icon", iconSize, fontColor, "wi", "wi-owm-"+forecast.weather[0].id);
+    weatherIconEl.classList.add("weather-icon", iconSize, fontColor, "wi", "wi-owm-"+iconType);
     weatherCardBodyEl.appendChild(weatherIconEl);
-    let currentTemp = document.createElement("h3");
-    currentTemp.classList.add("card-subtitle", "mb-2", fontColor);  
-    currentTemp.textContent = Math.round(forecast.main.temp) + tempScale;
-    weatherCardBodyEl.appendChild(currentTemp);
+    let tempEl = document.createElement("h3");
+    tempEl.classList.add("card-subtitle", "mb-2", fontColor);  
+    tempEl.textContent = Math.round(temp) + tempScale;
+    weatherCardBodyEl.appendChild(tempEl);
+}
 
-    if (dayNo === 0) {
+function buildHumidity(fontColor, humidity) {
+    let humidityEl = document.createElement("p");
+    humidityEl.classList.add("card-text", fontColor);
+    humidityEl.textContent = "Humidity: " + humidity + "%";
+    weatherCardBodyEl.appendChild(humidityEl);
+}
 
-        if (Math.round(forecast.main.temp) != Math.round(forecast.main.feels_like)) {
-            let feelsLikeEl = document.createElement("p");
-            feelsLikeEl.classList.add("card-text", fontColor);
-            if (Math.round(forecast.main.temp) > Math.round(forecast.main.feels_like)) {
-                feelsLikeCause = " with the wind chill."
-            } else {
-                feelsLikeCause = " with the humidity."
-            }
-        feelsLikeEl.textContent = "Feels like "+ Math.round(forecast.main.feels_like) + tempScale + feelsLikeCause;
-        weatherCardBodyEl.appendChild(feelsLikeEl);
-        }
-        let highLowEl =  document.createElement("p");
-        highLowEl.classList.add("card-text", fontColor);
-        highLowEl.textContent = "High: " + Math.round(forecast.main.temp_max) + tempScale + " | Low: " + Math.round(forecast.main.temp_min) + tempScale;
-        weatherCardBodyEl.appendChild(highLowEl);
-    }
+function addToDOM() {
     weatherCardEl.appendChild(weatherCardBodyEl);
-    weatherDisplayEl.appendChild(weatherCardEl);
+}
+function getUVLevel(uvNo) {
+    let uvLevel;
+    if (uvNo < 3) {
+        uvLevel = "low";
+    } else if (uvNo < 6) {
+        uvLevel = "mod";
+    } else if (uvNo < 8) {
+        uvLevel = "high";
+    } else if (uvNo < 11) {
+        uvLevel = "v-high";
+    } else  {
+        uvLevel = "ext";
+    }
+    return uvLevel;
+}
+function currentWeather(current) {
+    let fontColor = "white";
+
+    buildWeatherCard("bg-blue", false, false);
+
+    let cityEl = document.createElement("h2");
+    cityEl.classList.add("card-title", fontColor);
+    cityEl.textContent = cityName;
+    weatherCardBodyEl.appendChild(cityEl);
 
 
+    let currentIcon = current.weather[0].id;
+    let currentTemp = current.temp;
+    let currentDate = current.dt;
+    buildCommonCardElements("h3", currentDate, fontColor, "largeIcon", currentIcon, currentTemp);
+
+
+    if (Math.round(current.temp) != Math.round(current.feels_like)) {
+        let feelsLikeEl = document.createElement("p");
+        feelsLikeEl.classList.add("card-text", fontColor);
+        if (Math.round(current.temp) > Math.round(current.feels_like)) {
+            feelsLikeCause = " with the wind chill."
+        } else {
+            feelsLikeCause = " with the humidity."
+        }
+        feelsLikeEl.textContent = "Feels like "+ Math.round(current.feels_like) + tempScale + feelsLikeCause;
+        weatherCardBodyEl.appendChild(feelsLikeEl);
+    }
+
+    let windSpeedEl = document.createElement("p");
+    windSpeedEl.classList.add("card-text", fontColor);
+    let windSpeed;
+    if (windScale === " KM/H") {
+        windSpeed = Math.round(current.wind_speed * 360)/100 + windScale;
+    } else {
+        windSpeed = current.wind_speed + windScale;
+    }
+    windSpeedEl.textContent = "Wind Speed: " + windSpeed;
+    weatherCardBodyEl.appendChild(windSpeedEl);
+ 
+    let currentHumidity = current.humidity;
+    buildHumidity(fontColor, currentHumidity);
+
+    let uviEl = document.createElement("p");
+    let uvNumber = Math.round(current.uvi);
+    let uvLevel = getUVLevel(uvNumber);
+    uviEl.classList.add("card-text", fontColor);
+    uviEl.innerHTML = "UV Index: <span class='uv-rating " + uvLevel + "'>" + uvNumber +"</span>";
+    weatherCardBodyEl.appendChild(uviEl);
+
+
+    addToDOM();
+
+
+}
+
+function weatherForecast(forecast, dayNo){
+
+    let fontColor = "blue";
+    let isFirst = false;
+    
+    if (dayNo===0){
+        isFirst = true;
+
+        let fiveDayTitle = document.createElement("h3");
+        fiveDayTitle.classList.add(fontColor);
+        fiveDayTitle.textContent = "Five Day Forecast:";
+        weatherDisplayEl.appendChild(fiveDayTitle);
+        
+    }
+     
+    buildWeatherCard("bg-white", true, isFirst);
+
+    let forecastIcon = forecast.weather[0].id;
+    let forecastTemp = forecast.temp.max;
+    let forecastDate = forecast.dt;
+
+    buildCommonCardElements("h5", forecastDate, fontColor, "smallIcon", forecastIcon, forecastTemp);
+  
+    let forecastHumidity = forecast.humidity;
+    buildHumidity(fontColor, forecastHumidity);
+
+
+    addToDOM();
 
 }
 
