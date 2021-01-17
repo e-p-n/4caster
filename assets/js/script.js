@@ -1,26 +1,8 @@
 var cityEl = document.querySelector("#city");
 var searchBtnEl = document.querySelector("#search");
-var weatherIcons = [    {icon: "01d", fontRef: "wi wi-day-sunny"},
-                        {icon: "01n", fontRef: "wi wi-night-clear"},
-                        {icon: "02d", fontRef: "wi wi-day-cloudy"},
-                        {icon: "02n", fontRef: "wi wi-night-alt-cloudy"},
-                        {icon: "03d", fontRef: "wi wi-cloud"},
-                        {icon: "03n", fontRef: "wi wi-cloud"},
-                        {icon: "04d", fontRef: "wi wi-cloudy"},
-                        {icon: "04n", fontRef: "wi wi-cloudy"},
-                        {icon: "09d", fontRef: "wi wi-day-showers"},
-                        {icon: "09n", fontRef: "wi wi-night-showers"},
-                        {icon: "10d", fontRef: "wi wi-rain"},
-                        {icon: "10n", fontRef: "wi wi-rain"},
-                        {icon: "11d", fontRef: "wi wi-thunderstorm"},
-                        {icon: "11n", fontRef: "wi wi-thunderstorm"},
-                        {icon: "13d", fontRef: "wi wi-snowflake-cold"},
-                        {icon: "13n", fontRef: "wi wi-snowflake-cold"},
-                        {icon: "50d", fontRef: "wi wi-fog"},
-                        {icon: "50n", fontRef: "wi wi-fog"}
-                   ]
+var weatherDisplayEl = document.querySelector("main");
 
-console.log(weatherIcons[0].icon)
+
 
 function searchWeather() {
 
@@ -50,7 +32,7 @@ function searchWeather() {
             })
             .then(function(data){
                 let forecasts = data.list;
-                weatherForecast(forecasts[0]);
+                weatherForecast(forecasts[0], cityName);
                 //fiveDayForecast()
             })
     } else {
@@ -58,9 +40,52 @@ function searchWeather() {
     }
 }
 
-function weatherForecast(forecast){
+function weatherForecast(forecast, city){
+    city = city.charAt(0).toUpperCase() + city.slice(1);
+    let weatherCardEl = document.createElement("div");
+    weatherCardEl.classList.add("card", "today");
+    let weatherCardBodyEl = document.createElement("div");
+    weatherCardBodyEl.classList.add("card-body");
+    let cityEl = document.createElement("h2");
+    cityEl.classList.add("card-title", "white");
+    cityEl.textContent = city;
+    weatherCardBodyEl.appendChild(cityEl);
+    let dateEl = document.createElement("h3");
+    dateEl.classList.add("card-subtitle", "white");
+    dateEl.textContent = moment(forecast.dt*1000).format("dddd MMMM DD.");
+    weatherCardBodyEl.appendChild(dateEl);
+    let weatherIconEl = document.createElement("i");
+    weatherIconEl.classList.add("weather-icon", "white", "wi", "wi-owm-"+forecast.weather[0].id);
+    weatherCardBodyEl.appendChild(weatherIconEl);
+    let currentTemp = document.createElement("h3");
+    currentTemp.classList.add("card-subtitle", "mb-2", "white");  
+    currentTemp.textContent = Math.round(forecast.main.temp) + tempScale;
+    weatherCardBodyEl.appendChild(currentTemp);
+
+    if (Math.round(forecast.main.temp) != Math.round(forecast.main.feels_like)) {
+        let feelsLikeEl = document.createElement("p");
+        feelsLikeEl.classList.add("card-text", "white");
+        if (Math.round(forecast.main.temp) > Math.round(forecast.main.feels_like)) {
+            feelsLikeCause = " with the wind chill."
+        } else {
+            feelsLikeCause = " with the humidity."
+        }
+       feelsLikeEl.textContent = "Feels like "+ Math.round(forecast.main.feels_like) + tempScale + feelsLikeCause;
+       weatherCardBodyEl.appendChild(feelsLikeEl);
+    }
+    let highLowEl =  document.createElement("p");
+    highLowEl.classList.add("card-text", "white");
+    highLowEl.textContent = "High: " + Math.round(forecast.main.temp_min) + tempScale + " | Low: " + Math.round(forecast.main.temp_max) + tempScale;
+    weatherCardBodyEl.appendChild(highLowEl);
+    weatherCardEl.appendChild(weatherCardBodyEl);
+    weatherDisplayEl.appendChild(weatherCardEl);
+
     
-    console.log("Current Temp: " + Math.round(forecast.main.temp) + tempScale);
+
+
+
+
+    //console.log("Current Temp: " + Math.round(forecast.main.temp) + tempScale);
     if (Math.round(forecast.main.temp) === Math.round(forecast.main.feels_like)) {
         feelsLikeCause = "";
     } else {
@@ -73,11 +98,7 @@ function weatherForecast(forecast){
     }
     console.log("Low: "+ Math.round(forecast.main.temp_min) + tempScale);
     console.log("High: "+ Math.round(forecast.main.temp_max) + tempScale);
-    for (i = 0; i < weatherIcons.length; i++)
-        if (forecast.weather[0].icon === weatherIcons[i].icon) {
-            let finalIcon = weatherIcons[i].fontRef;
-            console.log(finalIcon);
-        }
+  
     console.log(forecast);
 
 
