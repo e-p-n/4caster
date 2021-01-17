@@ -57,12 +57,19 @@ h1 {
     padding: 0;
     margin: 0 0 30px;
 }
-.blue {
-    color: var(--secondary-color);
+.largeIcon {
+    font-size: 120px;
 }
-.today {
+.bg-blue {
     background-color: var(--secondary-color);
     text-align: center;
+}
+.bg-white {
+    background-color: white;
+    text-align: center;
+}
+.blue {
+    color: var(--secondary-color);
 }
 .white {
     color: white;
@@ -71,9 +78,7 @@ h1 {
     padding-bottom: 0;
     margin-bottom: 0;
 }
-.large {
-    font-size: 120px;
-}
+
 label {
     color: white;
 }
