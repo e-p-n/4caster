@@ -42,17 +42,25 @@
           <div class="sidebar-sticky">
             <h2 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-white">Search by city</h2>
             <form>
-                <input id="city" type="text" />
-                <label for="metric">C&deg;</label> <input type="radio" id="metric" value="metric" name="unit" checked="checked" />
-                <label for="imperial">f&deg;</label> <input type="radio" id="imperial" value="imperial" name="unit"/>
-                <button type="button" id="search" class="btn btn-primary"><i class="fas fa-search"></i></button>
+              <div class="button-holder">
+                C&deg;
+                <label class="switch">
+                  <input type="checkbox" id="unit" />
+                  <span class="slider round"></span>
+                </label> 
+                F&deg;</br>
+              </div>
+              
+              <input id="city" type="text" />
+              <button type="button" id="search" class="btn btn-primary"><i class="fas fa-search"></i></button>
             </form>
-            <h3 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-            <span>Saved searches</span>
-            <a class="d-flex align-items-center text-muted" href="#">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-            </a>
+            <h3 class="text-muted">
+              Recent searches
+
             </h3>
+            <div class="cities">
+
+            </div>
             
           </div>
         </nav>
