@@ -1,4 +1,4 @@
-# 4caster - Weather forecast app
+# 4caster - Weather Dashboard
 
 ## Description
 1. Created a webpage that allows you to look up the weather by city. Used openweathermap.org's One Call API as well as the GeoCoding API. Also used bootstrap, moment.js, fontawesome and Erik Flower's weather-icons.
@@ -17,4 +17,4 @@
 ![](./assets/images/screenshot.png)
 
 ## Link to webpage
-[4caster: Weather forecast app](https://e-p-n.github.io/4caster)
+[4caster: Weather Dashboard](https://e-p-n.github.io/4caster)
