@@ -4,17 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    
+    <!-- Bootstrap stylesheet -->
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     />
+    <!-- fontawesome stylesheet (used for magnifying glass icon in search form)-->
     <link
       rel="stylesheet"
       href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
       integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
       crossorigin="anonymous"
     />
-    <link rel="preconnect" href="https://fonts.gstatic.com">
+
+    <!-- Google fonts used-->
     <link 
         rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Tangerine" 
@@ -25,19 +29,22 @@
     />
 
     <link rel="stylesheet" href="assets/css/style.css" />
+    <!-- stylesheet for weather icons -->
     <link rel="stylesheet" href="assets/css/weather-icons.min.css" />
 
     <title>4caster</title>
   </head>
 
   <body>
-      <header>
-          <h1>4<span class="scripted">caster</span></h1>
-          <div class="tagline">Your source for weather</div>
-      </header>
 
-    <div class="container-fluidrid">
+    <header>
+        <h1>4<span class="scripted">caster</span></h1>
+        <div class="tagline">Your source for weather</div>
+    </header>
+
+    <div class="container-fluid">
       <div class="row">
+        <!-- navigation sidebar-->
         <nav class="col-md-3 d-block d-md-block bg-dark sidebar">
           <div class="sidebar-sticky">
             <h2 class="text-white">Search by city</h2>
@@ -58,20 +65,22 @@
               </div>
             </form>
             <h3>Recent searches</h3>
+            <!-- div for holding js generated recent search list-->
             <div class="cities">
 
             </div>
             
           </div>
         </nav>
-    
-          <main role="main" class="col-md-8 ml-sm-auto col-lg-9 pt-3 px-4">
+          <!-- main holds the returned wether forecast-->
+          <main role="main" class="col-md-8 ml-sm-auto col-lg-9 pt-3 px-6">
   
           </main>
         </div>
     </div>
 
     <script src="assets/js/script.js"></script>
+    <!-- Moment.js-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 
   </body>

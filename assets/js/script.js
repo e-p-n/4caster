@@ -9,7 +9,7 @@ if (!searchHistory) {
 }
 
 
-
+// Load cities from local storage and add them to the sidebar
 function loadCities() {
     cityListEl.textContent="";
     for(var i = searchHistory.length-1; i >=0; i--){
@@ -24,25 +24,32 @@ function loadCities() {
         
     }
 }
+
+//Add new city searches to searchCity array and then save array on local storage
 function saveCity(newCity) {
     for (var i = 0; i < searchHistory.length; i++) {
+        // check if city name has been searched before. If yes, remove the old sarch from the array
         if (newCity == searchHistory[i].city) {
             searchHistory.splice(i, 1);
         }
     }
     let savedCity = {city: newCity};
     searchHistory.push(savedCity);
+    // Keep recent searches list to a maximum of 10. Remove the oldest if over 10
     if (searchHistory.length > 10) {
         searchHistory.splice(0, 1)
     }
     localStorage.setItem("cities", JSON.stringify(searchHistory));
+    // Refresh the list of cities in the sidebar
     loadCities();
 
 }
 
+// Use API calls based on city entered.
 function searchWeather(theCity) {
     cityName = theCity;
 
+    // check which if they are using metric or imperial and set variables accordingly
     let unitValue = document.getElementById("unit").checked;
     if(unitValue) {
         tempScale = "˚F";
@@ -53,8 +60,10 @@ function searchWeather(theCity) {
         windScale = " KM/H";
         unit="metric";
     }
-  
+    
+    // check to see that a city name was actually entered.
     if (cityName) {
+        // Call the Geocoding API and get the coordinates for the city entered
         let coordAPICall = "https://api.openweathermap.org/geo/1.0/direct?q="+cityName+"&limit=1&appid=df74799927b7fd8a9f5fb2e7b85418e6";
         fetch(coordAPICall)
             .then(function(response){
@@ -63,29 +72,31 @@ function searchWeather(theCity) {
             .then(function(data){
                 lat = data[0].lat;
                 lon = data[0].lon;
+                // check city name in API return and change the cityName variable to the name in teh API (or english name if it has that variable). Corrects any capitalization issues.
                 if(data[0].local_names.en) {
                     cityName = data[0].local_names.en;
                 } else {
                     cityName = data[0].name;
                 }
                 saveCity(cityName);
+                //clear the DOM area that holds the forecast
                 cityEl.value = "";
-                let forecastAPICall = "https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=minutely,hourly,alerts&units="+unit+"&appid=df74799927b7fd8a9f5fb2e7b85418e6";
 
+                // Call the One CAll API using the coordinates from the Geocoding call. (This API does not provide for searching by city name).
+                let forecastAPICall = "https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=minutely,hourly,alerts&units="+unit+"&appid=df74799927b7fd8a9f5fb2e7b85418e6";
                 fetch(forecastAPICall)
                     .then(function(response) {
                         return response.json();        
                     })
                     .then(function(data){
                         currentWeather(data.current);
-                        // check to see if date of thefirst day of seven day forecast is the same as the current date. If it is start with the second day when generating five day forecast.
+                        // check to see if date of the first day of seven day forecast is the same as the current date. If it is start with the second day when generating five day forecast.
                         let addDay = 0;
                         let currentDate = moment(data.current.dt*1000).format("dddd MMMM DD");
                         let firstForecastDate = moment(data.current.dt*1000).format("dddd MMMM DD");
                         if (currentDate == firstForecastDate) {
                             addDay = 1;
                         } 
-                        
                         for (var i=0; i < 5; i++) {
                             weatherForecast(data.daily[i+addDay], i)
                         }
@@ -95,7 +106,7 @@ function searchWeather(theCity) {
                     })
             })          
             .catch(function(error){
-                alert("An error has occurred, please check your spelling and try again.")
+                alert("An error has occurred. Please try again.")
                 return;
             })
 
@@ -104,6 +115,7 @@ function searchWeather(theCity) {
     } 
 }
 
+// Adds the initials div for the cards that are added to the dom
 function buildWeatherCard(bgColor, isForecast, isFirst){
     
     weatherCardEl = document.createElement("div");
@@ -123,6 +135,7 @@ function buildWeatherCard(bgColor, isForecast, isFirst){
     }    
 }
 
+//sets heading size, date info, font colour icon an it's size and the temperature to the card
 function buildCommonCardElements(hSize, theDate, fontColor, iconSize, iconType, temp) {
     let dateEl = document.createElement(hSize);
     dateEl.classList.add("card-subtitle", fontColor);
@@ -138,7 +151,7 @@ function buildCommonCardElements(hSize, theDate, fontColor, iconSize, iconType, 
     tempEl.textContent = Math.round(temp) + tempScale;
     weatherCardBodyEl.appendChild(tempEl);
 }
-
+//adds humidity to the card
 function buildHumidity(fontColor, humidity) {
     let humidityEl = document.createElement("p");
     humidityEl.classList.add("card-text", fontColor);
@@ -146,9 +159,7 @@ function buildHumidity(fontColor, humidity) {
     weatherCardBodyEl.appendChild(humidityEl);
 }
 
-function addToDOM() {
-    weatherCardEl.appendChild(weatherCardBodyEl);
-}
+// sets the UV level to low, mod, high, v-high or ext. This values will set the class to create the right colour for the UV
 function getUVLevel(uvNo) {
     let uvLevel;
     if (uvNo < 3) {
@@ -164,6 +175,8 @@ function getUVLevel(uvNo) {
     }
     return uvLevel;
 }
+
+// create the cuurent weather card
 function currentWeather(current) {
     let fontColor = "white";
 
@@ -215,11 +228,12 @@ function currentWeather(current) {
     weatherCardBodyEl.appendChild(uviEl);
 
 
-    addToDOM();
+    weatherCardEl.appendChild(weatherCardBodyEl);
 
 
 }
 
+//cresate the 5-day forecast cards
 function weatherForecast(forecast, dayNo){
 
     let fontColor = "blue";
@@ -247,7 +261,7 @@ function weatherForecast(forecast, dayNo){
     buildHumidity(fontColor, forecastHumidity);
 
 
-    addToDOM();
+    weatherCardEl.appendChild(weatherCardBodyEl);
 
 }
 
