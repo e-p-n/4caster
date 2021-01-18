@@ -55,7 +55,7 @@ function searchWeather(theCity) {
     }
   
     if (cityName) {
-        let coordAPICall = "http://api.openweathermap.org/geo/1.0/direct?q="+cityName+"&limit=1&appid=df74799927b7fd8a9f5fb2e7b85418e6";
+        let coordAPICall = "https://api.openweathermap.org/geo/1.0/direct?q="+cityName+"&limit=1&appid=df74799927b7fd8a9f5fb2e7b85418e6";
         fetch(coordAPICall)
             .then(function(response){
                 return response.json();        
@@ -70,7 +70,7 @@ function searchWeather(theCity) {
                 }
                 saveCity(cityName);
                 cityEl.value = "";
-                let forecastAPICall = "http://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=minutely,hourly,alerts&units="+unit+"&appid=df74799927b7fd8a9f5fb2e7b85418e6";
+                let forecastAPICall = "https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=minutely,hourly,alerts&units="+unit+"&appid=df74799927b7fd8a9f5fb2e7b85418e6";
 
                 fetch(forecastAPICall)
                     .then(function(response) {
