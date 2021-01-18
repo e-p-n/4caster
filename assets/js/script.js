@@ -32,6 +32,9 @@ function saveCity(newCity) {
     }
     let savedCity = {city: newCity};
     searchHistory.push(savedCity);
+    if (searchHistory.length > 10) {
+        searchHistory.splice(0, 1)
+    }
     localStorage.setItem("cities", JSON.stringify(searchHistory));
     loadCities();
 
@@ -74,31 +77,37 @@ function searchWeather(theCity) {
                         return response.json();        
                     })
                     .then(function(data){
-                        currentWeather(data.current)
+                        currentWeather(data.current);
+                        // check to see if date of thefirst day of seven day forecast is the same as the current date. If it is start with the second day when generating five day forecast.
+                        let addDay = 0;
+                        let currentDate = moment(data.current.dt*1000).format("dddd MMMM DD");
+                        let firstForecastDate = moment(data.current.dt*1000).format("dddd MMMM DD");
+                        if (currentDate == firstForecastDate) {
+                            addDay = 1;
+                        } 
+                        
                         for (var i=0; i < 5; i++) {
-                            weatherForecast(data.daily[i], i)
+                            weatherForecast(data.daily[i+addDay], i)
                         }
                     })
                     .catch(function(){
                         alert("An error has occurred, please try again.")
                     })
             })          
-            .catch(function(){
+            .catch(function(error){
                 alert("An error has occurred, please check your spelling and try again.")
                 return;
             })
 
     
         weatherDisplayEl.textContent = "";
-    } else {
-        alert("Fill out the damned form!")
-    }
+    } 
 }
 
 function buildWeatherCard(bgColor, isForecast, isFirst){
     
     weatherCardEl = document.createElement("div");
-    weatherCardEl.classList.add("card", "col", bgColor);
+    weatherCardEl.classList.add("card", "col-sm", bgColor);
     weatherCardBodyEl = document.createElement("div");
     weatherCardBodyEl.classList.add("card-body");
     if (isForecast && isFirst) {
@@ -117,7 +126,9 @@ function buildWeatherCard(bgColor, isForecast, isFirst){
 function buildCommonCardElements(hSize, theDate, fontColor, iconSize, iconType, temp) {
     let dateEl = document.createElement(hSize);
     dateEl.classList.add("card-subtitle", fontColor);
-    dateEl.textContent = moment(theDate*1000).format("dddd MMMM DD");
+    let dayMonth = moment(theDate*1000).format('dddd MMMM');
+    let dateString = moment(theDate*1000).format('DD');
+    dateEl.innerHTML = dayMonth + "&nbsp;" + dateString;
     weatherCardBodyEl.appendChild(dateEl);
     let weatherIconEl = document.createElement("i");
     weatherIconEl.classList.add("weather-icon", iconSize, fontColor, "wi", "wi-owm-"+iconType);

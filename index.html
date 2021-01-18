@@ -27,22 +27,22 @@
     <link rel="stylesheet" href="assets/css/style.css" />
     <link rel="stylesheet" href="assets/css/weather-icons.min.css" />
 
-    <title>4Caster</title>
+    <title>4caster</title>
   </head>
 
   <body>
       <header>
           <h1>4<span class="scripted">caster</span></h1>
-          <p class="tagline">Your source for weather</p>
+          <div class="tagline">Your source for weather</div>
       </header>
 
-    <div class="container-fluid">
+    <div class="container-fluidrid">
       <div class="row">
-        <nav class="col-md-3 d-none d-md-block bg-dark sidebar">
+        <nav class="col-md-3 d-block d-md-block bg-dark sidebar">
           <div class="sidebar-sticky">
-            <h2 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-white">Search by city</h2>
+            <h2 class="text-white">Search by city</h2>
             <form>
-              <div class="button-holder">
+              <div class="button-holder col-12">
                 C&deg;
                 <label class="switch">
                   <input type="checkbox" id="unit" />
@@ -50,14 +50,14 @@
                 </label> 
                 F&deg;</br>
               </div>
-              
-              <input id="city" type="text" />
+              <div class="row">
+              <input class="col-10" id="city" type="text" />
+              <div class="col-2">
               <button type="button" id="search" class="btn btn-primary"><i class="fas fa-search"></i></button>
+            </div>
+              </div>
             </form>
-            <h3 class="text-muted">
-              Recent searches
-
-            </h3>
+            <h3>Recent searches</h3>
             <div class="cities">
 
             </div>
